@@ -1,0 +1,31 @@
+.text
+		.equ Audio_FIFOSPACE, 0xFF203044
+		.equ Audio_LEFT, 0xFF203048
+		.equ Audio_RIGHT, 0xFF20304C 
+		.global audio
+
+audio:	PUSH {R1-R10, LR}
+		LDR R2, =Audio_FIFOSPACE
+		LDR R5, =Audio_LEFT
+		LDR R6, =Audio_RIGHT
+		MOV R10, #0xFF000000
+		MOV R9, #0x00FF0000
+		AND R3, R10, R2
+		AND R4, R9, R2
+		LSR R3, #24
+		LSR R4, #16
+		CMP R3, #1
+		BLT INVALID
+		CMP R4, #1
+		BLT INVALID
+		STR R0, [R5]
+		STR R0, [R6]
+		MOV R0, #1
+		B DONE
+		
+
+INVALID:	MOV R0, #0
+			B DONE
+
+DONE:	POP {R1-R10, LR}
+		BX LR
